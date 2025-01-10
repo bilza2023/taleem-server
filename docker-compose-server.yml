@@ -5,9 +5,9 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-  # keep the :latest images and keep latest updated
+  
   api: 
-    image: taleemhelp/api:latest 
+    image: taleemhelp/base-api:latest 
     restart: unless-stopped
     ports:
       - "5000:5000"
