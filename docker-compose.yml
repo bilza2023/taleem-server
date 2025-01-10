@@ -1,10 +1,10 @@
 
 services:
-  ui:
-    image: taleemhelp/ui:latest
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
+  # ui:
+  #   image: taleemhelp/ui:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
   # keep the :latest images and keep latest updated
   api: 
     image: taleemhelp/api:latest 
