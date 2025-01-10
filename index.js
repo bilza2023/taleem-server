@@ -4,7 +4,15 @@ const mongoose = require('mongoose');
 const User = require('./schemas/User');
 const TCode = require('./schemas/TCode');
 const app = express();
-const RestfulExpressRouter = require('./RestfulExpressRouter'); 
+const RestfulExpressRouter = require('restful_express_router'); 
+
+const cors = require('cors');
+const corsOptions = {
+  origin: ['https://taleem-help-backoffice.vercel.app/', 'http://localhost:5173' , 'https://taleem.help'],
+  methods: 'POST', // Specify the allowed HTTP methods, e.g., 'GET', 'POST', 'PUT', etc.
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify the allowed headers
+};
+app.use(cors('*', corsOptions)); //working
 // Add JSON parsing middleware
 app.use(express.json());
 

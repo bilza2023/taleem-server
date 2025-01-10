@@ -1,4 +1,10 @@
 services:
+  # ui:
+  #   image: taleemhelp/ui:1.15
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+
   api:
     build: .
     restart: unless-stopped
