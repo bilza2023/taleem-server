@@ -97,7 +97,8 @@ app.get('/checkDb', async (req, res) => {
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    // debugger;
+    const user = await User.findOne({ email }).lean();
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -107,7 +108,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const payload = { id: user._id, email: user.email, role: user.role };
+    const payload = { id: user._id.toString(), email: user.email, role: user.role };
     const token = jwt.sign(payload, 'eea2c1ce3117d5bbba96b9e6791d97d98ca5efd90d242e96927e7ecf79fe97ddf05f071f2ef2352715008adaa4cb2163a647fd0e9cf2343728052be0ceecbfd3', { expiresIn: '15d' });
 
     res.json({ message: 'Login successful', token });
