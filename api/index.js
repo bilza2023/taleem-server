@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./schemas/User');
@@ -7,6 +8,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const checkAbility = require('./middlewares/authorization/checkAbility');
 const jwtMiddleware = require('./middlewares/jwtMiddleware');
+const jwtMiddlewareNoLogin = require('./middlewares/jwtMiddlewareNoLogin');
 const RestfulExpressRouter = require('restful_express_router'); 
 const cors = require('cors');
 
@@ -35,13 +37,12 @@ app.use('/user', userRouter.getRouter());
 ///////////////////////////////////////////////////////////////
 const tcodeRouter = new RestfulExpressRouter(TCode);
 
-// Add CASL and JWT middlewares one by one
+tcodeRouter.middlewareForList = [jwtMiddlewareNoLogin,checkAbility('list', 'Tcode')]; 
+tcodeRouter.middlewareForGetById = [jwtMiddlewareNoLogin,checkAbility('read', 'Tcode')]; // Same 
+
 tcodeRouter.middlewareForCreate = [jwtMiddleware, checkAbility('create', 'Tcode')];
 tcodeRouter.middlewareForUpdate = [jwtMiddleware, checkAbility('update', 'Tcode')];
-tcodeRouter.middlewareForList = [checkAbility('read', 'Tcode')]; // Handles free, login, and paid
-tcodeRouter.middlewareForGetById = [checkAbility('read', 'Tcode')]; // Same logic as list
 tcodeRouter.middlewareForDelete = [jwtMiddleware, checkAbility('delete', 'Tcode')];
-
 
 app.use('/tcode', tcodeRouter.getRouter());
 
