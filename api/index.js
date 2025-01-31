@@ -8,37 +8,56 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const checkAbility = require('./middlewares/authorization/checkAbility');
 const jwtMiddleware = require('./middlewares/jwtMiddleware');
-const jwtMiddlewareNoLogin = require('./middlewares/jwtMiddlewareNoLogin');
 const RestfulExpressRouter = require('restful_express_router'); 
 const cors = require('cors');
+const {login} = require('./controllers/authController');
+const setUserMiddleware = require('./middlewares/setUserMiddleware');
 
 ///////////////////////////////////////////////////////////////
+const allowedOrigins = ['http://localhost:3000' , 'https://taleem.help']; 
+
 const corsOptions = {
-  origin: ['http://localhost:5173', 'https://taleem.help', 'https://taleem.help/api'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'],  // Allow all necessary methods
-  credentials: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 600 // Specify how long the results of a preflight request can be cached
+  maxAge: 600
 };
-app.use(cors('*', corsOptions)); //working
+
+app.use(cors(corsOptions));
+// Ensure OPTIONS requests return proper headers
+app.options('*', cors(corsOptions));
+app.use(setUserMiddleware);
 
 ///////////////////////////////////////////////////////////////
 // Add JSON parsing middleware
 app.use(express.json());
 // Environment variables with fallback values
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = "mongodb://localhost:27017/localDb";
+
+///////////////////////////////////////////////////////////////
+//=== Mongo URI ====// 
+// MONGO_URI For 
+const MONGO_URI = "mongodb://admin:password@localhost:27017/localDb?authSource=admin"
+
+// MONGO_URI when mongodb is api use it as a  docker service (local_mongo)
+// const MONGO_URI = "mongodb://admin:password@local_mongo:27017/localDb?authSource=admin";
 
 ///////////////////////////////////////////////////////////////
 const userRouter = new RestfulExpressRouter(User);
 app.use('/user', userRouter.getRouter());
-
 ///////////////////////////////////////////////////////////////
+
 const tcodeRouter = new RestfulExpressRouter(TCode);
 
-tcodeRouter.middlewareForList = [jwtMiddlewareNoLogin,checkAbility('list', 'Tcode')]; 
-tcodeRouter.middlewareForGetById = [jwtMiddlewareNoLogin,checkAbility('read', 'Tcode')]; // Same 
+tcodeRouter.middlewareForList = [checkAbility('list', 'Tcode')]; 
+tcodeRouter.middlewareForGetById = [checkAbility('read', 'Tcode')]; // Same 
 
 tcodeRouter.middlewareForCreate = [jwtMiddleware, checkAbility('create', 'Tcode')];
 tcodeRouter.middlewareForUpdate = [jwtMiddleware, checkAbility('update', 'Tcode')];
@@ -83,42 +102,14 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Check database connectivity
-app.get('/checkDb', async (req, res) => {
-  try {
-    const userCount = await User.countDocuments();
-    res.json({ message: 'Database connected!', userCount });
-  } catch (err) {
-    res.status(500).json({ message: 'Database query failed', error: err.message });
-  }
-});
 
-// User login
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    // debugger;
-    const user = await User.findOne({ email }).lean();
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+app.post('/login', login);
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
-    const payload = { id: user._id.toString(), email: user.email, role: user.role };
-    const token = jwt.sign(payload, 'eea2c1ce3117d5bbba96b9e6791d97d98ca5efd90d242e96927e7ecf79fe97ddf05f071f2ef2352715008adaa4cb2163a647fd0e9cf2343728052be0ceecbfd3', { expiresIn: '15d' });
-
-    res.json({ message: 'Login successful', token });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error logging in', error: err.message });
-  }
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+/////
+module.exports = app;
