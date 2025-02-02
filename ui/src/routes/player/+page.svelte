@@ -1,45 +1,40 @@
 <script>
-  //@ts-nocheck 
-  import { toast } from '@zerodevx/svelte-toast';
+  //@ts-nocheck
+  import { Player, Taleem } from '$lib/taleem-presentation';
   import { onMount } from 'svelte';
-  import {db} from "$lib/db";
-  
-  import {PresentationObjUrl,PresentationPlayer} from "taleempresentation";
-  
-  let filename;
-  let presentationObj;
-  let pulse = 0;
-  
-  let ready=false;
-  let interval;
-  ////////////////////////////////////////////////////////
-  onMount(async ()=>{  
-    filename = new URLSearchParams(location.search).get("filename");
-    //---DB access
-    const resp = await db.tcode.get(`filename=${filename}`)
-  
-    if (resp.ok){
-      const incomming = await resp.json();
-      let questionData = incomming.data[0]; //get data out
-  
-      presentationObj = new PresentationObjUrl(questionData);
-      await presentationObj.init();
-      
-      ready=true; 
-   }else {
-      toast.push("failed to load");
-   } 
-  });
-  ////////////////////////////////////////////
-  </script> 
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class='bg-gray-800 text-white w-full min-h-screen' 
-  style='position: fixed; top: 0;'>
-  
-  {#if presentationObj}
-    <PresentationPlayer {presentationObj}    />
+  import fetchPresentation from '$lib/apiCalls/fetchPresentation';
+
+  let slides = null;
+  let id;
+  let soundUrlComplete=null;
+  let presentation;
+  let audioDataUrl;
+
+   // Environment variables
+   const SOUND_URL = import.meta.env.VITE_SOUND_BASE_URL;
+  const IMAGES_URL = import.meta.env.VITE_IMAGES_BASE_URL;
+  const DEFAULT_AUDIO = import.meta.env.VITE_DEFAULT_AUDIO;
+
+/////////////////////////////////////////////////////////////\\\\\\      
+onMount(async () => {
+  id = new URLSearchParams(location.search).get("id");
+  presentation = await fetchPresentation(id);
+  if (presentation) slides = presentation.slides;
+  soundUrlComplete = SOUND_URL + "/" + presentation.filename + ".opus";
+});
+//////////////////////////////////////////////////////////////////\\\\
+</script>
+
+<div class="bg-gray-800 text-white w-full">
+  {#if slides}
+    <div class="flex justify-center w-full border-white border-2 text-center rounded-lg">
+      {#key slides}
+        <Player
+          soundUrl={soundUrlComplete}
+          imagesUrl={IMAGES_URL}
+          slides={slides}
+        />
+      {/key}
+    </div>
   {/if}
-  </div><!--page wrapper-->
-  
-  
-  
+</div>

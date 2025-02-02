@@ -1,9 +1,10 @@
 //@ts-nocheck
-
+import Cookies from 'js-cookie'; 
 
 export default async function ajaxPost(url, payload){
 try{
-  const token = localStorage.getItem("token");
+  const token =  Cookies.get("token");
+  
   const resp = await fetch( url ,{
       method: 'POST',
       headers: {

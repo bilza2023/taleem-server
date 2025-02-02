@@ -1,2 +1,0 @@
-# My Taleem Server Deployment
-

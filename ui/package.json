@@ -12,24 +12,23 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"autoprefixer": "^10.4.16",
-		"dotenv": "16.0.3",
+		"dotenv": "^16.0.3",
 		"postcss": "^8.4.30",
 		"svelte": "^4.0.5",
-		"tailwindcss": "^3.3.3",
 		"vite": "^5.0.0"
 	},
 	"type": "module",
 	"dependencies": {
 		"@zerodevx/svelte-toast": "^0.9.5",
 		"howler": "^2.2.4",
+		"js-cookie": "^3.0.5",
+		"jwt-decode": "^4.0.0",
 		"mathjs": "^12.3.0",
-		"svelte-katex": "0.1.2",
-		
-		"sveltetools_bils": "^0.0.3",
-		"taleem_ui_lib": "^0.0.6",
-
-		"taleemtools": "^1.0.5",
 		"simplerestclient2": "^1.0.5",
-		"taleempresentation": "^0.3.0"
+		"svelte-katex": "0.1.2",
+		"sveltetools_bils": "^0.0.3",
+		"tailwindcss": "^3.3.3",
+		"taleem_ui_lib": "^0.0.6",
+		"taleemtools": "^1.0.5"
 	}
 }

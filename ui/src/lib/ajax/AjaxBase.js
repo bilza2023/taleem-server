@@ -1,40 +1,40 @@
 //@ts-nocheck
 
-import ajaxDelete from "./ajaxDelete";
-import ajaxPost from "./ajaxPost";
-import ajaxPut from "./ajaxPut";
-import ajaxGet from "./ajaxGet";
-import {API_URL} from "$lib/util";
+import ajaxDelete from "./ajaxDelete.js";
+import ajaxPost from "./ajaxPost.js";
+import ajaxPut from "./ajaxPut.js";
+import ajaxGet from "./ajaxGet.js";
 
 
 export default class AjaxBase {
 
-    constructor(baseUrl = "") {
+    constructor(baseUrl = "",apiUrl="") {
       this.baseUrl = baseUrl;
+      this.apiUrl = apiUrl;
     }
   
     async get(queryString = "") {
-      const resp = await ajaxGet(`${API_URL}/${this.baseUrl}${queryString ? '?' + queryString : ''}`);
+      const resp = await ajaxGet(`${this.apiUrl}/${this.baseUrl}${queryString ? '?' + queryString : ''}`);
       return resp;
     }
   
     async getOne(id) {
-      const resp = await ajaxGet(`${API_URL}/${this.baseUrl}/${id}`);
+      const resp = await ajaxGet(`${this.apiUrl}/${this.baseUrl}/${id}`);
       return resp;
     }
   
     async create(data) {
-      const resp = await ajaxPost(`${API_URL}/${this.baseUrl}`, data);
+      const resp = await ajaxPost(`${this.apiUrl}/${this.baseUrl}`, data);
       return resp;
     }
   
     async update(id, data) {
-      const resp = await ajaxPut(`${API_URL}/${this.baseUrl}/${id}`, data);
+      const resp = await ajaxPut(`${this.apiUrl}/${this.baseUrl}/${id}`, data);
       return resp;
     }
   
     async delete(id) {
-      const resp = await ajaxDelete(`${API_URL}/${this.baseUrl}/${id}`);
+      const resp = await ajaxDelete(`${this.apiUrl}/${this.baseUrl}/${id}`);
       return resp;
     }
   

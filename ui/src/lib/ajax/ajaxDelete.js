@@ -1,8 +1,13 @@
 
+
   //@ts-nocheck
+  import Cookies from 'js-cookie'; 
+
   export default async function ajaxDelete(url) {
     try {
-      const token = localStorage.getItem("token");
+  
+      const token =  Cookies.get("token");
+        
       const resp = await fetch(url, {
         method: 'DELETE',
         headers: {
